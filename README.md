@@ -1,5 +1,7 @@
 # Messaging Notifications
 
+🌐 **[Página do projeto](https://lucodifier.github.io/messaging-notifications/)**
+
 Serviço de notificações assíncronas em **.NET 8** com **RabbitMQ**: uma API recebe o pedido e responde na hora; um worker consome a fila e envia por **Email**, **SMS** ou **WhatsApp**, conforme o tipo e os parâmetros da mensagem.
 
 ```text
