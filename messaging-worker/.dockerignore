@@ -1,0 +1,14 @@
+.git
+.github
+.claude
+.vs
+.vscode
+.idea
+**/bin
+**/obj
+.env
+.env.*
+!.env.example
+**/appsettings.json
+**/appsettings.*.json
+!appsettings.example.json

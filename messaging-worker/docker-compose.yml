@@ -1,0 +1,50 @@
+# Sobe o worker + Mailpit (caixa de entrada fake para ver os emails).
+# Antes: cp .env.example .env
+#
+#   Com a messaging-api já rodando (o compose dela publica o RabbitMQ em 5672):
+#     docker compose up -d --build
+#
+#   Sozinho, com um RabbitMQ próprio:
+#     docker compose --profile broker up -d --build
+#
+#   Mailpit:      http://localhost:8025
+#   RabbitMQ UI:  http://localhost:15672  (messaging / valor de RabbitMQ__pass)
+services:
+  messaging-worker:
+    build: .
+    image: messaging-worker:local
+    container_name: messaging-worker
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - mailpit
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'curl -fsS "http://127.0.0.1:$${HEALTH_PORT:-8080}/health" || exit 1']
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: messaging-mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    restart: unless-stopped
+
+  rabbitmq:
+    profiles: ["broker"]
+    image: rabbitmq:3.13-management
+    container_name: messaging-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: messaging
+      RABBITMQ_DEFAULT_PASS: ${RabbitMQ__pass:-messaging123}
+    restart: unless-stopped

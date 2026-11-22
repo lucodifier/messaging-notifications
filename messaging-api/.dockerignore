@@ -1,0 +1,14 @@
+.git
+.github
+.vs
+.vscode
+.idea
+bin
+obj
+data
+.env
+.env.*
+!.env.example
+appsettings.json
+appsettings.*.json
+!appsettings.example.json

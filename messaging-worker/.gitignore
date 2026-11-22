@@ -1,0 +1,114 @@
+## Ignore build results
+bin/
+obj/
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## VS Code folders
+.vscode/
+.vs/
+
+## ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+## Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+## Folder config file
+Desktop.ini
+
+## Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+## VS Code extensions directory
+.vscode/
+
+## JetBrains Rider
+.idea/
+
+## OS generated files
+.DS_Store
+*.DS_Store
+*.AppleDouble
+.LSOverride
+
+## Node_modules (caso use Node/React junto)
+node_modules/
+
+## npm package logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+## Environment files
+.env
+.env.*
+!.env.example
+
+## Azure Pipeline temporary files
+**/*.publishsettings
+*.azurePubxml
+*.PublishProfiles/
+
+## dotCover
+*.dotCover
+
+## Global JSON (SDK resolver file)
+global.json
+
+## Paket dependency manager
+.paket/
+paket-files/
+
+## Local history for VS Code or others
+.history/
+
+## log files
+*.log
+
+## Coverage reports
+coverage/
+TestResults/
+
+## Crash dumps
+*.dmp
+
+## Docker files
+docker-compose.override.yml
+docker-compose.override.*.yml
+
+## Terraform files (caso um dia use infraestrutura como código)
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfplan
+
+## Others
+*.swp
+*.swo
+*.bak
+*.tmp
+*.temp
+*.pid
+*.seed
+*.orig
+
+
+## mais bins 
+
+bin/Debug/net9.0
+*bin/Debug/net9.0
+*obj
+*bin/
+*obj/
+bin/
+obj/
+
+appsettings.json
+
+# End

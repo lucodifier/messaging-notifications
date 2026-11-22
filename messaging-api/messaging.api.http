@@ -1,0 +1,56 @@
+# dotnet run -> http://localhost:5122 | docker compose -> http://localhost:6006
+@host = http://localhost:5122
+
+### Liveness
+GET {{host}}/api/health
+
+### Readiness (confirma a conexão com o RabbitMQ)
+GET {{host}}/api/health/ready
+
+### Enviar email
+# @name createMessage
+POST {{host}}/api/message
+Content-Type: application/json
+Idempotency-Key: welcome-user-42
+
+{
+  "system": "demo-app",
+  "subjectCode": "welcome-email",
+  "notificationType": "Email",
+  "recipients": ["user@example.com"],
+  "metadata": {
+    "subject": "Bem-vindo!",
+    "template": "<h1>Olá, {{name}}!</h1><p>Sua conta foi criada com sucesso.</p>",
+    "name": "Maria"
+  }
+}
+
+### Enviar SMS
+POST {{host}}/api/message
+Content-Type: application/json
+
+{
+  "system": "demo-app",
+  "subjectCode": "order-sms",
+  "notificationType": "Sms",
+  "recipients": ["+5511999999999"],
+  "metadata": { "message": "Seu pedido foi enviado!" }
+}
+
+### Enviar WhatsApp
+POST {{host}}/api/message
+Content-Type: application/json
+
+{
+  "system": "demo-app",
+  "subjectCode": "promo-whatsapp",
+  "notificationType": "WhatsApp",
+  "recipients": ["+5511988888888"],
+  "metadata": { "message": "Confira as novidades!" }
+}
+
+### Status de uma mensagem
+GET {{host}}/api/message/{{createMessage.response.body.correlationId}}
+
+### Auditoria (filtros: status, system, notificationType, from, to, page, pageSize)
+GET {{host}}/api/messages?status=SENT&page=1&pageSize=20

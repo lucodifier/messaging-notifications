@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# Configuração do CodeRabbit — messaging.api
+
+language: "pt-BR"
+
+tone_instructions: >-
+  Atue como arquiteto de software sênior revisando uma API .NET 8 Minimal API
+  de notificações que publica mensagens no RabbitMQ. Priorize o crítico:
+  bugs reais, segurança, perda de mensagens e contrato da fila.
+  Evite nitpicks de estilo.
+
+knowledge_base:
+  learnings:
+    scope: auto
+  issues:
+    scope: auto
+
+reviews:
+  profile: assertive
+  high_level_summary: true
+  poem: false
+  sequence_diagrams: false
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches: ["dev", "stg", "main"]
+
+  path_filters:
+    - "!**/bin/**"
+    - "!**/obj/**"
+    - "!**/.vs/**"
+    - "!**/*.user"
+
+  path_instructions:
+    - path: "Routes/**"
+      instructions: >-
+        Endpoints Minimal API: todo endpoint deve validar o input recebido
+        (recipients, notificationType, metadata) antes de publicar na fila.
+        Nunca retornar ou logar credenciais, tokens ou dados sensíveis dos
+        destinatários.
+
+    - path: "Services/**"
+      instructions: >-
+        Publicação no RabbitMQ: verificar descarte correto de conexões e
+        canais (IDisposable), uso correto de async/await (sem .Result/.Wait()),
+        tratamento de exceções na publicação sem perda silenciosa de mensagem
+        e substituição segura do placeholder {pass} na URL de conexão.
+
+    - path: "Contracts/**"
+      instructions: >-
+        O contrato CreateMessageRequest é duplicado manualmente no repositório
+        messaging.worker (Models/NotificationMessage.cs). Qualquer mudança de
+        shape (campos, tipos, valores de notificationType) deve alertar que o
+        worker precisa ser atualizado em conjunto para não quebrar o consumo.
+
+    - path: "Data/**"
+      instructions: >-
+        Acesso a dados: queries sempre parametrizadas, atenção a transações,
+        timeouts e liberação de conexões.
+
+    - path: ".github/workflows/**"
+      instructions: >-
+        Pipelines por branch (dev/stg/main) com build Docker, push para GHCR
+        e deploy via docker compose em runner self-hosted. Verificar se
+        secrets não vazam em logs e se as tags de imagem estão consistentes
+        com a branch.

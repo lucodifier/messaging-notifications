@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# Configuração do CodeRabbit — messaging.worker
+language: "pt-BR"
+
+tone_instructions: >-
+  Atue como arquiteto de software sênior revisando um worker .NET 8 de
+  notificações via RabbitMQ. Priorize bugs reais, segurança, perda de
+  mensagens e integração com provedores externos. Evite nitpicks de estilo.
+
+knowledge_base:
+  learnings:
+    scope: auto
+  issues:
+    scope: auto
+
+reviews:
+  profile: assertive
+  high_level_summary: true
+  poem: false
+  sequence_diagrams: false
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches: ["dev", "stg", "main"]
+
+  path_filters:
+    - "!**/bin/**"
+    - "!**/obj/**"
+    - "!.vs/**"
+    - "!.idea/**"
+
+  path_instructions:
+    - path: "Services/**"
+      instructions: >-
+        Consumidor RabbitMQ e senders (Elastic Email, SMTP, Comtele,
+        Twilio): o consumidor faz nack sem requeue — mensagens falhas são
+        descartadas; mudanças nesse comportamento devem ser intencionais.
+        Cada mensagem roda em escopo DI próprio (handlers/senders scoped) —
+        sinalizar serviço scoped injetado em singleton. Verificar
+        async/await correto (sem async void, .Result ou .Wait()), respeito
+        às flags Enabled dos provedores e ausência de segredos em logs.
+
+    - path: "Models/**"
+      instructions: >-
+        O contrato NotificationMessage é duplicado manualmente com
+        CreateMessageRequest no repositório messaging.api. Qualquer mudança
+        de shape (campos, tipos, enum NotificationType) exige sincronizar o
+        outro repositório — alertar sempre.
+
+    - path: "messaging.worker.Tests/**"
+      instructions: >-
+        Testes xUnit de integração que publicam mensagens reais no RabbitMQ
+        e fazem no-op silencioso quando RabbitMQ:Url/RabbitMQ:pass não
+        estão configurados. Novos testes devem cobrir casos de borda e
+        cenários de erro, não apenas o happy path, e manter esse padrão.
+
+    - path: "appsettings.json"
+      instructions: >-
+        Nunca deve conter segredos reais (senhas, API keys, tokens).
+        Valores sensíveis vêm de variáveis de ambiente (Section__Key) no
+        deploy.
+
+    - path: ".github/workflows/**"
+      instructions: >-
+        Pipelines por branch (dev/stg/prd): build Docker, push para GHCR e
+        deploy via docker compose em runner self-hosted. Atenção a
+        exposição de segredos em logs e mudanças de tags/registry.
